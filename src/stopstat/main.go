@@ -2,10 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -16,14 +16,27 @@ func init() {
 	flag.StringVar(&StopCode, "stop", "CROF", "train or bus stop code, examples: WELL, JOHN, CROF")
 }
 
+func main() {
+
+	flag.Parse()
+
+	report, err := GetStopReport(StopCode)
+	if err != nil {
+		fmt.Println("PROBLEM:", err)
+		return
+	}
+
+	fmt.Print(report)
+}
+
 const (
 	MetLinkAPIv1StopDeparturesUrl = "https://www.metlink.org.nz/api/v1/StopDepartures/%s"
 )
 
 type MetLinkAPIv1StopDeparturesResponse struct {
-	LastModified string            `json:"LastModified"`
-	Notices      NoticesStructList `json:"Notices"`
-	Stop         StopStruct
+	LastModified string             `json:"LastModified"`
+	Notices      NoticesStructList  `json:"Notices"`
+	Stop         StopStruct         `json:"Stop"`
 	Services     ServicesStructList `json:"Services"`
 }
 
@@ -91,33 +104,33 @@ func (n NoticesStructList) String() string {
 	return notices
 }
 
-func main() {
+func GetStopReport(stopCode string) (*MetLinkAPIv1StopDeparturesResponse, error) {
 
-	flag.Parse()
-
-	StopCode = strings.ToUpper(StopCode)
+	stopCode = strings.ToUpper(stopCode)
 
 	url := fmt.Sprintf(MetLinkAPIv1StopDeparturesUrl, StopCode)
 
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Println(err)
-		return
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New("failed, maybe a bad stop code?")
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		log.Println(err)
-		return
+		return nil, err
 	}
+
 	var response MetLinkAPIv1StopDeparturesResponse
+
 	err = json.Unmarshal(body, &response)
 	if err != nil {
-		log.Println(err)
-		return
+		return nil, err
 	}
 
-	fmt.Print(&response)
-
+	return &response, nil
 }
