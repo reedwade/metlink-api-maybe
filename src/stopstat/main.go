@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 )
 
 var StopCode string
@@ -58,7 +59,13 @@ func (n *ServicesStruct) String() string {
 	if n.IsRealtime {
 		realtime = "(realTime)"
 	}
-	return fmt.Sprintf("    %s %s %s - %s - %s\n", n.DisplayDeparture, realtime, n.OriginStopName, n.Direction, n.DestinationStopName)
+	return fmt.Sprintf("    %s %s %s - %s - %s\n",
+		PrettyTimestamp(n.DisplayDeparture),
+		realtime,
+		n.OriginStopName,
+		n.Direction,
+		n.DestinationStopName,
+	)
 }
 
 func (n ServicesStructList) String() string {
@@ -86,7 +93,11 @@ type StopStruct struct {
 }
 
 func (m *MetLinkAPIv1StopDeparturesResponse) String() string {
-	return fmt.Sprintf("%s\n%s%s\n", m.Stop.Name, m.Notices, m.Services)
+	return fmt.Sprintf("%s\n%s%s\n",
+		m.Stop.Name,
+		m.Notices,
+		m.Services,
+	)
 }
 
 func (n *NoticesStruct) String() string {
@@ -104,11 +115,19 @@ func (n NoticesStructList) String() string {
 	return notices
 }
 
+func PrettyTimestamp(rawTimestamp string) string {
+	t, err := time.Parse(time.RFC3339, rawTimestamp)
+	if err != nil {
+		return rawTimestamp
+	}
+	return t.Format(time.Kitchen)
+}
+
 func GetStopReport(stopCode string) (*MetLinkAPIv1StopDeparturesResponse, error) {
 
 	stopCode = strings.ToUpper(stopCode)
 
-	url := fmt.Sprintf(MetLinkAPIv1StopDeparturesUrl, StopCode)
+	url := fmt.Sprintf(MetLinkAPIv1StopDeparturesUrl, stopCode)
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -125,12 +144,12 @@ func GetStopReport(stopCode string) (*MetLinkAPIv1StopDeparturesResponse, error)
 		return nil, err
 	}
 
-	var response MetLinkAPIv1StopDeparturesResponse
+	var apiResponse MetLinkAPIv1StopDeparturesResponse
 
-	err = json.Unmarshal(body, &response)
+	err = json.Unmarshal(body, &apiResponse)
 	if err != nil {
 		return nil, err
 	}
 
-	return &response, nil
+	return &apiResponse, nil
 }
