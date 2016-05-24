@@ -6,11 +6,13 @@ There seems to be one call of interest which, given a train or bus stop code ret
 
 `https://www.metlink.org.nz/api/v1/StopDepartures/JOHN`
 
-Where, `JOHN` in this case is the J'vill train stop.
+Where, `JOHN` in this case is the J'ville train stop.
 
-It's not very tidy but it does seem to work. The output is ugly still but it's a start.
+----
 
-If you happen to have a Go compiler installed then typing:
+What I've written so far is not very tidy but it does seem to work.
+
+If you happen to have a Go compiler installed then try this:
 
 ```
 $ go build -o stopstat src/stopstat/main.go 
@@ -43,5 +45,8 @@ Services:
 ```
 
 
-The output could be a lot better.
+The output could be a lot better, will be.
 
+----
+
+I'm writing a Slack bot which will use this.
