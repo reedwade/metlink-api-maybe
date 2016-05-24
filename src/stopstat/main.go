@@ -55,15 +55,14 @@ type ServicesStruct struct {
 type ServicesStructList []*ServicesStruct
 
 func (n *ServicesStruct) String() string {
-	var realtime string
+	realtime := "(sched)"
 	if n.IsRealtime {
-		realtime = "(realTime)"
+		realtime = "(real)"
 	}
-	return fmt.Sprintf("    %s %s %s - %s - %s\n",
+	return fmt.Sprintf("    %s %s %s to %s\n",
 		PrettyTimestamp(n.DisplayDeparture),
 		realtime,
 		n.OriginStopName,
-		n.Direction,
 		n.DestinationStopName,
 	)
 }
