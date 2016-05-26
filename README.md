@@ -1,23 +1,29 @@
-# metlink-api-maybe
+# Metlink.org.nz Unofficial API Description
 
 This is an unofficial description of the API used by https://www.metlink.org.nz/
 to provide current bus, train and ferry information.
+
+I wanted to write a little Slack bot the other day to tell me when the next train would be at the J'ville mall. I could look at the web site--it's a very nice web site--but I wanted to do this instead.
 
 
 # MetLink API v1 Analysis
 
 ## Images and Links
 
-`Icon` and `Link` references seem to have escaped /'s. I don't know why this is but I'm sure there's some reason.
+`Icon` and `Link` references have `\` escaped /'s. I don't know why this is but I'm sure there's some reason.
 
-These seem to point to resources which are available under https://www.metlink.org.nz/
+These point to resources which are available under https://www.metlink.org.nz/
 
 Example: `"Icon": "\/assets\/StopImages\/WELL.jpg"`
 
 
 ## `/api/v1/StopDepartures/STOPCODE`
 
-Example: `https://www.metlink.org.nz/api/v1/StopDepartures/WELL`
+Examples:
+
+- `https://www.metlink.org.nz/api/v1/StopDepartures/WELL`
+- `https://www.metlink.org.nz/api/v1/StopDepartures/CROF`
+- `https://www.metlink.org.nz/api/v1/StopDepartures/7093`
 
 The `StopDepartures` call returns at nice summary of upcoming departures along with information about a specific stop.
 
@@ -39,7 +45,7 @@ The returned JSON object contains 4 top level items:
   }
 ```
 
-- `Notices` (optional) - a list of records. The `LineNote` fields contain the interesting info
+- `Notices` (optional) - a list of records. The `LineNote` fields contain the interesting info.
 
 ```
   "Notices": [
@@ -162,7 +168,7 @@ The returned JSON object contains 2 top level items:
 If you happen to have a Go compiler installed then try this:
 
 ```
-$ go build -o stopstat src/stopstat/main.go 
+$ go build -o stopstat go/stopstat/main.go 
 
 $ ./stopstat -stop 7093
 Taiaroa Street (near 10)
@@ -191,6 +197,10 @@ Services:
     12:59PM  Strathmore Park - Outbound - Khandallah
 ```
 
-----
+## Python
 
-I'm writing a Slack bot which will use this.
+soon
+
+## Slack Bot (in Go)
+
+I have a working Slack bot which I'll tidy up and drop here.
