@@ -5,6 +5,11 @@ to provide current bus, train and ferry information.
 
 I wanted to write a little Slack bot the other day to tell me when the next train would be at the J'ville mall. I could look at the web site--it's a very nice web site--but I wanted to do this instead.
 
+It's impossible to say how stable this information is. Metlink appeared on the verge of releasing a documented
+API but nothing has come of it. There's clearly been no attempt made to obfuscate the one being used on the
+web site. And, it's got enough to it that I suspect it's also used by the display signs planted at many stops.
+
+I suspect this is the one that they were going to make public and maybe then decided not to.
 
 # MetLink API v1 Analysis
 
@@ -199,7 +204,35 @@ Services:
 
 ## Python
 
-soon
+```
+$ ./python/stopstat.py well
+Wellington Station
+Notices:
+    28-29 May: Some services on the WRL are replaced by bus between WELL and MAST. See posters or tranzmetro.co.nz for details.
+    4-6 June: all services on the HVL are replaced by bus. see posters or tranzmetro.co.nz for more information
+    4-6 June: all services on the KPL are replaced by bus. see posters or tranzmetro.co.nz for more information
+Services:
+    04:10PM (sched) Wellington Stn to TAIT - All stops*
+    04:15PM (sched) Wellington Stn to WAIK - Express
+    04:17PM (sched) Wellington Stn to UPPE - Express
+    04:17PM (sched) Wellington Stn to JOHN - All stops
+    04:19PM (sched) Wellington Stn to MELL - All stops
+    04:21PM (sched) Wellington Stn to PORI - All stops
+    04:25PM (sched) Wellington Stn to MAST - WRL Service
+    04:30PM (sched) Wellington Stn to TAIT - All stops*
+    04:32PM (sched) Wellington Stn to JOHN - All stops
+    04:35PM (sched) Wellington Stn to WAIK - Express
+    04:37PM (sched) Wellington Stn to UPPE - Express
+    04:39PM (sched) Wellington Stn to MELL - All stops
+    04:43PM (sched) Wellington Stn to PORI - All stops
+    04:47PM (sched) Wellington Stn to JOHN - All stops
+    04:50PM (sched) Wellington Stn to TAIT - All stops*
+    04:55PM (sched) Wellington Stn to WAIK - Express
+    04:57PM (sched) Wellington Stn to UPPE - Express
+    04:59PM (sched) Wellington Stn to MELL - All stops
+    05:02PM (sched) Wellington Stn to JOHN - All stops
+    05:03PM (sched) Wellington Stn to PORI - All stops
+```
 
 ## Slack Bot (in Go)
 
