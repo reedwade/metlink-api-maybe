@@ -17,7 +17,7 @@ These point to resources which are available under https://www.metlink.org.nz/
 Example: `"Icon": "\/assets\/StopImages\/WELL.jpg"`
 
 
-## `/api/v1/StopDepartures/STOPCODE`
+## `/api/v1/StopDepartures/<STOP>`
 
 Examples:
 
@@ -92,7 +92,7 @@ Example of a `Services` record list item:
     },
 ```
 
-## `/api/v1/ServiceLocation/$SERVICE-CODE`
+## `/api/v1/ServiceLocation/<SERVICE>`
 
 Examples:
 
