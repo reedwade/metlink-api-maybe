@@ -1,16 +1,163 @@
 # metlink-api-maybe
 
-Some code I've got working that uses an undocumented API found inside https://www.metlink.org.nz/
+This is an unofficial description of the API used by https://www.metlink.org.nz/
+to provide current bus, train and ferry information.
 
-There seems to be one call of interest which, given a train or bus stop code returns a reasonably understandable whack of JSON.
 
-`https://www.metlink.org.nz/api/v1/StopDepartures/JOHN`
+# MetLink API v1 Analysis
 
-Where, `JOHN` in this case is the J'ville train stop.
+## Images and Links
 
-----
+`Icon` and `Link` references seem to have escaped /'s. I don't know why this is but I'm sure there's some reason.
 
-What I've written so far is not very tidy but it does seem to work. Needs tests.
+These seem to point to resources which are available under https://www.metlink.org.nz/
+
+Example: `"Icon": "\/assets\/StopImages\/WELL.jpg"`
+
+
+## `/api/v1/StopDepartures/STOPCODE`
+
+Example: `https://www.metlink.org.nz/api/v1/StopDepartures/WELL`
+
+The `StopDepartures` call returns at nice summary of upcoming departures along with information about a specific stop.
+
+The returned JSON object contains 4 top level items:
+
+- `LastModified` - an RFC3339 formated timestamp related to this query. Ex: `2016-05-26T14:04:47+12:00`
+
+- `Stop` - a record containing static details about this stop
+
+```
+  "Stop": {
+    "Name": "Wellington Station",
+    "Sms": "WELL",
+    "Farezone": "1",
+    "Lat": "-41.2789686",
+    "Long": "174.7805617",
+    "LastModified": "2015-09-03T11:14:30+12:00",
+    "Icon": "\/assets\/StopImages\/WELL.jpg"
+  }
+```
+
+- `Notices` (optional) - a list of records. The `LineNote` fields contain the interesting info
+
+```
+  "Notices": [
+    {
+      "RecordedAtTime": "2016-05-26T14:04:39+12:00",
+      "MonitoringRef": "7093",
+      "LineRef": "",
+      "DirectionRef": "",
+      "LineNote": "Police incident resolved in the CBD. Expect some delays while services, esp in & out of Karori, get back to normal. metlink.org.nz"
+    }
+  ]
+```
+
+- `Services` - a list of (always 20?) upcoming trains or buses coming to this stop, soonest first
+
+
+Example of a `Services` record list item:
+
+```
+    {
+      "ServiceID": "JVL",
+      "IsRealtime": true,
+      "VehicleRef": "3718",
+      "Direction": "Outbound",
+      "OperatorRef": "RAIL",
+      "OriginStopID": "WELL",
+      "OriginStopName": "Wellington Stn",
+      "DestinationStopID": "JOHN",
+      "DestinationStopName": "JOHN - All stops",
+      "AimedArrival": "2016-05-26T14:09:00+12:00",
+      "AimedDeparture": "2016-05-26T14:09:00+12:00",
+      "VehicleFeature": null,
+      "DepartureStatus": "delayed",
+      "ExpectedDeparture": "2016-05-26T14:11:28+12:00",
+      "DisplayDeparture": "2016-05-26T14:11:28+12:00",
+      "DisplayDepartureSeconds": 479,
+      "Service": {
+        "Code": "JVL",
+        "TrimmedCode": "JVL",
+        "Name": "Johnsonville Line (Johnsonville - Wellington)",
+        "Mode": "Train",
+        "Link": "timetables\/train\/JVL"
+      }
+    },
+```
+
+## `/api/v1/ServiceLocation/$SERVICE-CODE`
+
+Examples:
+
+- `https://www.metlink.org.nz/api/v1/ServiceLocation/JVL` (Jville train)
+- `https://www.metlink.org.nz/api/v1/ServiceLocation/14` (14 bus)
+
+The returned JSON object contains 2 top level items:
+
+- `LastModified` - an RFC3339 formated timestamp related to this query. Ex: `2016-05-26T14:04:47+12:00`
+
+- `Services` - A list of major stops. For the Jville train, for example, it lists Wellington and Johnsonville only.
+
+```
+      "Services": [
+        {
+          "RecordedAtTime": "2016-05-26T14:35:32+12:00",
+          "VehicleRef": "3729",
+          "ServiceID": "JVL",
+          "HasStarted": true,
+          "DepartureTime": "2016-05-26T14:32:00+12:00",
+          "OriginStopID": "WELL",
+          "OriginStopName": "Wellington Stn",
+          "DestinationStopID": "JOHN",
+          "DestinationStopName": "Johnsonville Stn",
+          "Direction": "Outbound",
+          "Bearing": "36",
+          "BehindSchedule": true,
+          "VehicleFeature": null,
+          "DelaySeconds": 82,
+          "Lat": "-41.2633438",
+          "Long": "174.7850647",
+          "Service": {
+            "Code": "JVL",
+            "TrimmedCode": "JVL",
+            "Name": "Johnsonville Line (Wellington - Johnsonville)",
+            "Mode": "Train",
+            "Link": "timetables\/train\/JVL"
+          }
+        },
+        {
+          "RecordedAtTime": "2016-05-26T14:35:32+12:00",
+          "VehicleRef": "3736",
+          "ServiceID": "JVL",
+          "HasStarted": true,
+          "DepartureTime": "2016-05-26T14:30:00+12:00",
+          "OriginStopID": "JOHN",
+          "OriginStopName": "Johnsonville Stn",
+          "DestinationStopID": "WELL",
+          "DestinationStopName": "Wellington Stn",
+          "Direction": "Inbound",
+          "Bearing": "204",
+          "BehindSchedule": false,
+          "VehicleFeature": null,
+          "DelaySeconds": -2,
+          "Lat": "-41.2420845",
+          "Long": "174.7938232",
+          "Service": {
+            "Code": "JVL",
+            "TrimmedCode": "JVL",
+            "Name": "Johnsonville Line (Johnsonville - Wellington)",
+            "Mode": "Train",
+            "Link": "timetables\/train\/JVL"
+          }
+        }
+      ]
+```
+
+# Working Software
+
+
+## Go
 
 If you happen to have a Go compiler installed then try this:
 
