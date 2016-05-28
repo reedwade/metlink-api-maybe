@@ -12,9 +12,11 @@ import (
 )
 
 var StopCode string
+var DirectionFilter string
 
 func init() {
-	flag.StringVar(&StopCode, "stop", "CROF", "train or bus stop code, examples: WELL, JOHN, CROF")
+	flag.StringVar(&StopCode, "s", "CROF", "train or bus stop code, examples: WELL, JOHN, CROF")
+	flag.StringVar(&DirectionFilter, "d", "", "direction filter (inbound/outbound), can be abbreviated (i/o)")
 }
 
 func main() {
@@ -26,8 +28,7 @@ func main() {
 		fmt.Println("PROBLEM:", err)
 		return
 	}
-
-	fmt.Print(report)
+	fmt.Print(report.String(DirectionFilter))
 }
 
 const (
@@ -67,12 +68,19 @@ func (n *ServicesStruct) String() string {
 	)
 }
 
-func (n ServicesStructList) String() string {
+func (n ServicesStructList) String(directionFilter string) string {
 	if len(n) == 0 {
 		return ""
 	}
 	out := "Services:\n"
 	for _, v := range n {
+		//TODO make directionFilter handle lower case and abbreviations
+		if len(directionFilter) > 0 &&
+			!strings.HasPrefix(
+				strings.ToLower(v.Direction),
+				strings.ToLower(directionFilter)) {
+			continue
+		}
 		out += v.String()
 	}
 	return out
@@ -91,11 +99,11 @@ type StopStruct struct {
 	Name string `json:"Name"`
 }
 
-func (m *MetLinkAPIv1StopDeparturesResponse) String() string {
+func (m *MetLinkAPIv1StopDeparturesResponse) String(directionFilter string) string {
 	return fmt.Sprintf("%s\n%s%s\n",
 		m.Stop.Name,
 		m.Notices,
-		m.Services,
+		m.Services.String(directionFilter),
 	)
 }
 
