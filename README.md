@@ -237,3 +237,8 @@ Services:
 ## Slack Bot (in Go)
 
 I have a working Slack bot which I'll tidy up and drop here.
+
+## Swagger support
+
+Not complete or fully tested but it totally just works.
+

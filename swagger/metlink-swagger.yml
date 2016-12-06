@@ -1,0 +1,139 @@
+---
+swagger: '2.0'
+info:
+  title: Unofficial MetLink API v1
+  description: unofficial description of the API used by https://www.metlink.org.nz/ to provide current bus, train and ferry information
+  version: "0.0.1"
+host: www.metlink.org.nz
+schemes:
+  - https
+basePath: /api/v1
+produces:
+  - application/json
+
+paths:
+
+  /StopDepartures/{stop}:
+    get:
+      summary: Departures
+      description: |
+        document me
+      parameters:
+        - name: stop
+          in: path
+          description: short code for the train or bus stop
+          required: true
+          type: string
+      responses:
+        200:
+          description: a list of departures
+          schema:
+            $ref: '#/definitions/Departures'
+
+definitions:
+
+  Departures:
+    type: object
+    properties:
+      LastModified:
+        $ref: '#/definitions/Timestamp'
+      Stop:
+        $ref: '#/definitions/Stop'
+      Notices:
+        type: array
+        items:
+          $ref: '#/definitions/Notice'
+        description: optional list of service notices
+      Services:
+        type: array
+        description: a list of (always 20?) upcoming trains or buses coming to this stop, soonest first
+        items:
+          $ref: '#/definitions/Service'
+
+  Service:
+    type: object
+    properties:
+      ServiceID:
+        type: string
+      IsRealtime:
+        type: boolean
+      VehicleRef:
+        type: string
+      Direction:
+        type: string
+      OperatorRef:
+        type: string
+      OriginStopID:
+        type: string
+      OriginStopName:
+        type: string
+      DestinationStopID:
+        type: string
+      DestinationStopName:
+        type: string
+      AimedArrival:
+        $ref: '#/definitions/Timestamp'
+      AimedDeparture:
+        $ref: '#/definitions/Timestamp'
+      VehicleFeature:
+        type: string
+      DepartureStatus:
+        type: string
+      ExpectedDeparture:
+        type: string
+      DisplayDeparture:
+        type: string
+      DisplayDepartureSeconds:
+        type: number
+      Service:
+        $ref: '#/definitions/ServiceDetails'
+
+  ServiceDetails:
+    type: object
+    properties:
+      Code:
+        type: string
+      TrimmedCode:
+        type: string
+      Name:
+        type: string
+      Mode:
+        type: string
+      Link:
+        type: string
+
+  Stop:
+    description: short code for this stop
+    type: object
+    properties:
+      Name:
+        type: string
+      LastModified:
+        $ref: '#/definitions/Timestamp'
+      Sms:
+        type: string
+      Farezone:
+        type: string
+      Long:
+        type: string
+      Lat:
+        type: string
+      Icon:
+        type: string
+
+  Notice:
+    type: object
+    properties:
+      RecordedAtTime:
+        type: string
+      MonitoringRef:
+        type: string
+      LineRef:
+        type: string
+      DirectionRef:
+        type: string
+      LineNote:
+        type: string
+
+  Timestamp:
+    type: string
