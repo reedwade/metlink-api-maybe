@@ -4,6 +4,7 @@ import os
 import sys
 import json
 import time
+from datetime import datetime,timedelta
 
 
 if len(sys.argv) != 2:
@@ -28,9 +29,18 @@ def service_summary(service):
     )
 
 
-def pretty_timestamp(rfc339_timestamp):
-    t = time.strptime(rfc339_timestamp, "%Y-%m-%dT%H:%M:%S+12:00")
-    return time.strftime("%I:%M%p", t)
+def pretty_timestamp(t):
+    #
+    # python2's strptime doesn't handle %z so here's a workaround, from:
+    #   http://stackoverflow.com/questions/1101508/how-to-parse-dates-with-0400-timezone-string-in-python/23122493#23122493
+    #
+    ret = datetime.strptime(t[0:16], '%Y-%m-%dT%H:%M')
+    if t[18] == '+':
+        ret += timedelta(hours=int(t[19:22]), minutes=int(t[23:]))
+    elif t[18] == '-':
+        ret -= timedelta(hours=int(t[19:22]), minutes=int(t[23:]))
+
+    return ret.strftime("%I:%M%p")
 
 try:
     # python2
