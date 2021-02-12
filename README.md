@@ -1,3 +1,8 @@
+
+Look here first probably (I haven't yet myself but it looks like a better option) -- https://opendata.metlink.org.nz/
+
+----
+
 # Metlink.org.nz Unofficial API Description
 
 This is an unofficial description of the API used by https://www.metlink.org.nz/
